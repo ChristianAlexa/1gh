@@ -51,6 +51,9 @@ jobs:
           chmod +x 1gh.app/Contents/MacOS/1gh-bin
           cp docs/1gh.icns 1gh.app/Contents/Resources/
 
+      - name: Ad-hoc code sign
+        run: codesign --force --deep --sign - 1gh.app
+
       - name: Create .dmg
         run: hdiutil create -volname "1gh" -srcfolder 1gh.app -ov -format UDZO ${{ matrix.asset }}
 
