@@ -4,6 +4,8 @@ All you need is **one good hour**.
 
 A 60-minute focus timer TUI paired with a short todo list (max 4 tasks). Write down what you want to accomplish, start the timer, and work through your list.
 
+![1gh screenshot](docs/1gh-screenshot.png)
+
 ## Install
 
 Each launch starts a fresh session. No data is persisted to disk.
