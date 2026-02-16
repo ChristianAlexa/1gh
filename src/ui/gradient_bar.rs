@@ -1,7 +1,6 @@
 use ratatui::{
     buffer::Buffer,
     layout::Rect,
-    style::Color,
     symbols,
     text::Span,
     widgets::Widget,
@@ -64,8 +63,8 @@ impl Widget for GradientBar {
             }
             let cell = &mut buf[(x, y)];
             if label_start + i as u16 >= filled_end {
-                // Over unfilled region: light text on dark bg
-                cell.set_fg(Color::White).set_bg(bar_bg);
+                // Over unfilled region: orange text on dark bg
+                cell.set_fg(colors::normal()).set_bg(bar_bg);
             } else {
                 // Over filled region: dark text on gradient bg
                 cell.set_fg(colors::label_text())

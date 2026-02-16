@@ -1,12 +1,14 @@
 use ratatui::{
     layout::{Alignment, Constraint, Layout, Rect},
-    style::{Color, Style},
+    style::Style,
     text::{Line, Span},
     widgets::{Block, Borders, Clear, Paragraph, Wrap},
     Frame,
 };
 
 use crate::app::ModalKind;
+
+use super::colors;
 
 pub(super) fn draw_modal(frame: &mut Frame, area: Rect, modal: &ModalKind) {
     if matches!(modal, ModalKind::Help) {
@@ -32,10 +34,11 @@ pub(super) fn draw_modal(frame: &mut Frame, area: Rect, modal: &ModalKind) {
     let block = Block::default()
         .title(format!(" {title} "))
         .borders(Borders::ALL)
-        .border_style(Style::default().fg(Color::Yellow));
+        .border_style(Style::default().fg(colors::bright()));
 
     let para = Paragraph::new(body)
         .alignment(Alignment::Center)
+        .style(Style::default().fg(colors::normal()))
         .wrap(Wrap { trim: false })
         .block(block);
 
@@ -49,9 +52,9 @@ fn draw_help_modal(frame: &mut Frame, area: Rect) {
     let block = Block::default()
         .title(" Shortcuts ")
         .borders(Borders::ALL)
-        .border_style(Style::default().fg(Color::Yellow));
+        .border_style(Style::default().fg(colors::bright()));
 
-    let key = Style::default().fg(Color::Yellow);
+    let key = Style::default().fg(colors::bright());
 
     let shortcuts: &[(&str, &str, &str, &str)] = &[
         ("Space", "Play/Pause timer", "j/↓", "Move down"),
@@ -67,15 +70,15 @@ fn draw_help_modal(frame: &mut Frame, area: Rect) {
     for &(k1, d1, k2, d2) in shortcuts {
         lines.push(Line::from(vec![
             Span::styled(format!("{k1:>7}"), key),
-            Span::raw(format!("  {d1:<18}")),
+            Span::styled(format!("  {d1:<18}"), Style::default().fg(colors::normal())),
             Span::styled(format!("{k2:>5}"), key),
-            Span::raw(format!("  {d2}")),
+            Span::styled(format!("  {d2}"), Style::default().fg(colors::normal())),
         ]));
     }
     lines.push(Line::from(""));
     lines.push(Line::from(Span::styled(
         "            [Esc] Close",
-        Style::default().fg(Color::DarkGray),
+        Style::default().fg(colors::dim()),
     )));
 
     let para = Paragraph::new(lines).block(block);
