@@ -15,16 +15,12 @@ jobs:
         include:
           - runner: macos-latest
             target: aarch64-apple-darwin
-            asset: 1gh-macos-arm64.tar.gz
+            arch: arm64
+            asset: 1gh-macos-arm64.dmg
           - runner: macos-latest
             target: x86_64-apple-darwin
-            asset: 1gh-macos-x86_64.tar.gz
-          - runner: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-            asset: 1gh-linux-x86_64.tar.gz
-          - runner: windows-latest
-            target: x86_64-pc-windows-msvc
-            asset: 1gh-windows-x86_64.zip
+            arch: x86_64
+            asset: 1gh-macos-x86_64.dmg
 
     runs-on: ${{ matrix.runner }}
 
@@ -39,13 +35,19 @@ jobs:
       - name: Build
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Package (Unix)
-        if: runner.os != 'Windows'
-        run: tar -czf ${{ matrix.asset }} -C target/${{ matrix.target }}/release 1gh
+      - name: Create .app bundle
+        run: |
+          mkdir -p 1gh.app/Contents/MacOS
+          mkdir -p 1gh.app/Contents/Resources
+          cp packaging/macos/Info.plist 1gh.app/Contents/
+          cp target/${{ matrix.target }}/release/1gh 1gh.app/Contents/MacOS/1gh-bin
+          cp packaging/macos/launcher.sh 1gh.app/Contents/MacOS/1gh
+          chmod +x 1gh.app/Contents/MacOS/1gh
+          chmod +x 1gh.app/Contents/MacOS/1gh-bin
+          cp docs/1gh.icns 1gh.app/Contents/Resources/
 
-      - name: Package (Windows)
-        if: runner.os == 'Windows'
-        run: Compress-Archive -Path target/${{ matrix.target }}/release/1gh.exe -DestinationPath ${{ matrix.asset }}
+      - name: Create .dmg
+        run: hdiutil create -volname "1gh" -srcfolder 1gh.app -ov -format UDZO ${{ matrix.asset }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

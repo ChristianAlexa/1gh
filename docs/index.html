@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>One Good Hour — A 60-minute focus timer for your terminal</title>
   <meta name="description" content="A 60-minute focus timer TUI with a 4-task todo list. No persistence, no distractions — just one good hour of work.">
+  <link rel="icon" href="1gh-favicon.ico">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -150,6 +151,34 @@
       margin-bottom: 0.375rem;
     }
 
+    .setup-steps {
+      list-style: none;
+      counter-reset: step;
+    }
+
+    .setup-steps li {
+      counter-increment: step;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.9375rem;
+    }
+
+    .setup-steps li::before {
+      content: counter(step);
+      font-family: var(--mono);
+      font-weight: 600;
+      color: var(--accent);
+      margin-right: 0.75rem;
+    }
+
+    .setup-steps code {
+      font-family: var(--mono);
+      color: var(--accent);
+    }
+
     /* Footer */
     footer {
       padding: 1.75rem 0;
@@ -183,21 +212,13 @@
     <section id="download">
       <h2>$ install</h2>
       <div class="download-grid">
-        <a class="download-btn" href="https://github.com/christianalexa/1gh/releases/latest/download/1gh-macos-arm64.tar.gz">
+        <a class="download-btn" href="https://github.com/christianalexa/1gh/releases/latest/download/1gh-macos-arm64.dmg">
           <span class="platform">macOS</span>
           <span class="arch">Apple Silicon (ARM64)</span>
         </a>
-        <a class="download-btn" href="https://github.com/christianalexa/1gh/releases/latest/download/1gh-macos-x86_64.tar.gz">
+        <a class="download-btn" href="https://github.com/christianalexa/1gh/releases/latest/download/1gh-macos-x86_64.dmg">
           <span class="platform">macOS</span>
           <span class="arch">Intel (x86_64)</span>
-        </a>
-        <a class="download-btn" href="https://github.com/christianalexa/1gh/releases/latest/download/1gh-linux-x86_64.tar.gz">
-          <span class="platform">Linux</span>
-          <span class="arch">x86_64</span>
-        </a>
-        <a class="download-btn" href="https://github.com/christianalexa/1gh/releases/latest/download/1gh-windows-x86_64.zip">
-          <span class="platform">Windows</span>
-          <span class="arch">x86_64</span>
         </a>
       </div>
       <div class="alt-install">
@@ -206,11 +227,13 @@
       </div>
     </section>
 
-    <section id="run">
-      <h2>$ run</h2>
-      <div class="alt-install">
-        <code>1gh</code>
-      </div>
+    <section id="setup">
+      <h2>$ setup</h2>
+      <ol class="setup-steps">
+        <li>Open the <code>.dmg</code></li>
+        <li>Drag <strong>1gh</strong> to Applications</li>
+        <li>Launch from Spotlight or Dock</li>
+      </ol>
     </section>
 
     <footer>

@@ -4,20 +4,11 @@ A 60-minute focus timer TUI paired with a short todo list (max 4 tasks). Write d
 
 ## Install
 
+**macOS** — Download the `.dmg` from [onegoodhour.com](https://onegoodhour.com), drag to Applications, and launch from Spotlight or Dock.
+
+**Cargo** — If you have Rust installed:
 ```sh
-make install
-```
-
-This installs `1gh` to `~/.cargo/bin` (ensure it's in your PATH).
-
-Alternatively, build without installing:
-```sh
-make build  # binary at target/release/1gh
-```
-
-## Usage
-
-```sh
+cargo install one-good-hour
 1gh
 ```
 
