@@ -11,7 +11,8 @@ use crate::types::{format_time, Todo, MAX_TIME};
 
 use super::gradient_bar::GradientBar;
 
-const COLOR_SELECTION_BG: Color = Color::Rgb(30, 30, 50);
+use super::colors;
+
 
 pub(super) fn draw_title(frame: &mut Frame, area: Rect) {
     let title = Paragraph::new("ONE GOOD HOUR")
@@ -104,7 +105,7 @@ pub(super) fn draw_todos(frame: &mut Frame, area: Rect, app: &App) {
         ]);
 
         let style = if is_selected {
-            Style::default().bg(COLOR_SELECTION_BG)
+            Style::default().bg(colors::selection_bg())
         } else {
             Style::default()
         };
