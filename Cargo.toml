@@ -1,6 +1,6 @@
 [package]
 name = "one-good-hour"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 description = "A 60-minute focus timer TUI with a 4-task todo list"
 repository = "https://github.com/christianalexa/1gh"
