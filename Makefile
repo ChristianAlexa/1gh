@@ -1,4 +1,4 @@
-.PHONY: install build run clean uninstall help
+.PHONY: install build run clean uninstall help sync-version
 
 # Default target
 help:
@@ -10,11 +10,19 @@ help:
 	@echo "  make run        - Build and run in release mode"
 	@echo "  make clean      - Remove build artifacts"
 	@echo "  make uninstall  - Remove installed binary"
+	@echo "  make sync-version - Sync version from Cargo.toml to docs and packaging"
+
+VERSION := $(shell grep '^version' Cargo.toml | head -1 | sed 's/.*"\(.*\)"/\1/')
+
+sync-version:
+	@echo "Syncing version $(VERSION) from Cargo.toml"
+	sed -i '' 's|<span>v[^<]*</span>|<span>v$(VERSION)</span>|' docs/index.html
+	sed -i '' 's|<string>[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*</string>|<string>$(VERSION)</string>|' packaging/macos/Info.plist
 
 install:
 	cargo install --path .
 
-build:
+build: sync-version
 	cargo build --release
 
 run:
