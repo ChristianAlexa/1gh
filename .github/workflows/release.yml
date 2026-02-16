@@ -32,6 +32,11 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
+      - name: Inject version into Info.plist
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          sed -i '' "s/0\.0\.0/$VERSION/g" packaging/macos/Info.plist
+
       - name: Build
         run: cargo build --release --target ${{ matrix.target }}
 
