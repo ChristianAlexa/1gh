@@ -267,3 +267,316 @@ impl App {
     }
 
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn app_with_todo(text: &str) -> App {
+        let mut app = App::new();
+        app.active_note.todos[0].text = text.to_string();
+        app
+    }
+
+    // -- Selection movement --
+
+    #[test]
+    fn move_selection_down_increments() {
+        let mut app = App::new();
+        assert_eq!(app.selected_todo, 0);
+        app.move_selection_down();
+        assert_eq!(app.selected_todo, 1);
+        app.move_selection_down();
+        assert_eq!(app.selected_todo, 2);
+        app.move_selection_down();
+        assert_eq!(app.selected_todo, 3);
+    }
+
+    #[test]
+    fn move_selection_down_clamps_at_max() {
+        let mut app = App::new();
+        app.selected_todo = 3;
+        app.move_selection_down();
+        assert_eq!(app.selected_todo, 3);
+    }
+
+    #[test]
+    fn move_selection_up_decrements() {
+        let mut app = App::new();
+        app.selected_todo = 3;
+        app.move_selection_up();
+        assert_eq!(app.selected_todo, 2);
+        app.move_selection_up();
+        assert_eq!(app.selected_todo, 1);
+        app.move_selection_up();
+        assert_eq!(app.selected_todo, 0);
+    }
+
+    #[test]
+    fn move_selection_up_clamps_at_zero() {
+        let mut app = App::new();
+        app.move_selection_up();
+        assert_eq!(app.selected_todo, 0);
+    }
+
+    // -- Editing --
+
+    #[test]
+    fn start_and_stop_editing() {
+        let mut app = App::new();
+        app.selected_todo = 2;
+        app.start_editing();
+        assert_eq!(app.input_mode, InputMode::Editing(2));
+        app.stop_editing();
+        assert_eq!(app.input_mode, InputMode::Normal);
+    }
+
+    #[test]
+    fn edit_char_appends() {
+        let mut app = App::new();
+        app.edit_char('h', 0);
+        app.edit_char('i', 0);
+        assert_eq!(app.active_note.todos[0].text, "hi");
+    }
+
+    #[test]
+    fn edit_char_respects_max_len() {
+        let mut app = App::new();
+        for _ in 0..MAX_TODO_LEN {
+            app.edit_char('a', 0);
+        }
+        assert_eq!(app.active_note.todos[0].text.len(), MAX_TODO_LEN);
+        app.edit_char('b', 0);
+        assert_eq!(app.active_note.todos[0].text.len(), MAX_TODO_LEN);
+    }
+
+    #[test]
+    fn edit_backspace_removes_last() {
+        let mut app = app_with_todo("hello");
+        app.edit_backspace(0);
+        assert_eq!(app.active_note.todos[0].text, "hell");
+    }
+
+    #[test]
+    fn edit_backspace_on_empty_is_safe() {
+        let mut app = App::new();
+        app.edit_backspace(0); // should not panic
+        assert_eq!(app.active_note.todos[0].text, "");
+    }
+
+    // -- Toggle todo --
+
+    #[test]
+    fn toggle_todo_with_text() {
+        let mut app = app_with_todo("task");
+        assert!(!app.active_note.todos[0].completed);
+        app.toggle_todo();
+        assert!(app.active_note.todos[0].completed);
+        app.toggle_todo();
+        assert!(!app.active_note.todos[0].completed);
+    }
+
+    #[test]
+    fn toggle_todo_empty_is_noop() {
+        let mut app = App::new();
+        app.toggle_todo();
+        assert!(!app.active_note.todos[0].completed);
+    }
+
+    // -- Remove todo --
+
+    #[test]
+    fn remove_todo_clears_text_and_completed() {
+        let mut app = app_with_todo("task");
+        app.active_note.todos[0].completed = true;
+        app.remove_todo();
+        assert_eq!(app.active_note.todos[0].text, "");
+        assert!(!app.active_note.todos[0].completed);
+    }
+
+    // -- Timer --
+
+    #[test]
+    fn toggle_timer_starts_and_pauses() {
+        let mut app = App::new();
+        assert!(!app.active_note.is_running);
+        app.toggle_timer();
+        assert!(app.active_note.is_running);
+        assert!(app.active_note.target_time.is_some());
+        app.toggle_timer();
+        assert!(!app.active_note.is_running);
+        assert!(app.active_note.target_time.is_none());
+    }
+
+    #[test]
+    fn toggle_timer_blocked_at_zero() {
+        let mut app = App::new();
+        app.active_note.time_left = 0;
+        app.toggle_timer();
+        assert!(!app.active_note.is_running);
+    }
+
+    #[test]
+    fn reset_timer_restores_defaults() {
+        let mut app = App::new();
+        app.active_note.time_left = 100;
+        app.active_note.is_running = true;
+        app.active_note.target_time = Some(999);
+        app.reset_timer();
+        assert_eq!(app.active_note.time_left, MAX_TIME);
+        assert!(!app.active_note.is_running);
+        assert!(app.active_note.target_time.is_none());
+    }
+
+    // -- Session completion --
+
+    #[test]
+    fn show_complete_session_modal_requires_content() {
+        let mut app = App::new();
+        app.show_complete_session_modal();
+        assert!(app.modal.is_none()); // all todos empty, no modal
+
+        app.active_note.todos[1].text = "something".to_string();
+        app.show_complete_session_modal();
+        assert!(matches!(app.modal, Some(ModalKind::CompleteSession)));
+        assert_eq!(app.input_mode, InputMode::Modal);
+    }
+
+    #[test]
+    fn complete_session_via_confirm() {
+        let mut app = app_with_todo("task 1");
+        app.active_note.todos[1].text = "task 2".to_string();
+        app.active_note.todos[1].completed = true;
+        app.active_note.time_left = 1800; // used half the time
+
+        app.show_complete_session_modal();
+        app.confirm_modal();
+
+        assert_eq!(app.completed_notes.len(), 1);
+        let note = &app.completed_notes[0];
+        assert_eq!(note.completion_number, 1);
+        assert_eq!(note.time_spent, 1800);
+        assert_eq!(note.todos[0].text, "task 1");
+        assert!(note.todos[1].completed);
+
+        // Active note should be reset
+        assert_eq!(app.active_note.time_left, MAX_TIME);
+        assert!(app.active_note.todos[0].text.is_empty());
+        assert_eq!(app.selected_todo, 0);
+        assert_eq!(app.history_index, Some(0));
+    }
+
+    #[test]
+    fn dismiss_modal_clears_state() {
+        let mut app = app_with_todo("task");
+        app.show_complete_session_modal();
+        app.dismiss_modal();
+        assert!(app.modal.is_none());
+        assert_eq!(app.input_mode, InputMode::Normal);
+        assert!(app.completed_notes.is_empty()); // session NOT completed
+    }
+
+    // -- History navigation --
+
+    fn app_with_history(count: usize) -> App {
+        let mut app = App::new();
+        for i in 0..count {
+            app.active_note.todos[0].text = format!("session {}", i + 1);
+            app.show_complete_session_modal();
+            app.confirm_modal();
+        }
+        app
+    }
+
+    #[test]
+    fn history_navigation_empty() {
+        let mut app = App::new();
+        app.next_history();
+        assert_eq!(app.history_index, None);
+        app.prev_history();
+        assert_eq!(app.history_index, None);
+    }
+
+    #[test]
+    fn next_history_from_none_starts_at_zero() {
+        let mut app = app_with_history(3);
+        app.history_index = None;
+        app.next_history();
+        assert_eq!(app.history_index, Some(0));
+    }
+
+    #[test]
+    fn prev_history_from_none_starts_at_last() {
+        let mut app = app_with_history(3);
+        app.history_index = None;
+        app.prev_history();
+        assert_eq!(app.history_index, Some(2));
+    }
+
+    #[test]
+    fn next_history_clamps_at_end() {
+        let mut app = app_with_history(2);
+        app.history_index = Some(1);
+        app.next_history();
+        assert_eq!(app.history_index, Some(1)); // stays at last
+    }
+
+    #[test]
+    fn prev_history_clamps_at_start() {
+        let mut app = app_with_history(2);
+        app.history_index = Some(0);
+        app.prev_history();
+        assert_eq!(app.history_index, Some(0)); // stays at first
+    }
+
+    #[test]
+    fn history_navigation_walks_through() {
+        let mut app = app_with_history(3);
+        app.history_index = Some(0);
+        app.next_history();
+        assert_eq!(app.history_index, Some(1));
+        app.next_history();
+        assert_eq!(app.history_index, Some(2));
+        app.prev_history();
+        assert_eq!(app.history_index, Some(1));
+    }
+
+    // -- Clear notes --
+
+    #[test]
+    fn clear_notes_modal_requires_history() {
+        let mut app = App::new();
+        app.show_clear_notes_modal();
+        assert!(app.modal.is_none());
+    }
+
+    #[test]
+    fn clear_notes_via_confirm() {
+        let mut app = app_with_history(2);
+        assert_eq!(app.completed_notes.len(), 2);
+        app.show_clear_notes_modal();
+        app.confirm_modal();
+        assert!(app.completed_notes.is_empty());
+        assert_eq!(app.history_index, None);
+    }
+
+    // -- Build markdown --
+
+    #[test]
+    fn build_markdown_format() {
+        let mut app = app_with_todo("write tests");
+        app.active_note.todos[0].completed = true;
+        app.active_note.todos[1].text = "review PR".to_string();
+        app.active_note.time_left = 2400; // 20 min spent
+
+        app.show_complete_session_modal();
+        app.confirm_modal();
+
+        let md = app.build_markdown();
+        assert!(md.contains("# One Good Hour"));
+        assert!(md.contains("## Session 1"));
+        assert!(md.contains("Time spent: 20:00"));
+        assert!(md.contains("- [x] write tests"));
+        assert!(md.contains("- [ ] review PR"));
+    }
+}

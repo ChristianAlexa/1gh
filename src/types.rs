@@ -6,6 +6,43 @@ pub fn format_time(seconds: u64) -> String {
     format!("{mins}:{secs:02}")
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn format_time_zero() {
+        assert_eq!(format_time(0), "0:00");
+    }
+
+    #[test]
+    fn format_time_seconds_only() {
+        assert_eq!(format_time(59), "0:59");
+    }
+
+    #[test]
+    fn format_time_exact_minute() {
+        assert_eq!(format_time(60), "1:00");
+    }
+
+    #[test]
+    fn format_time_mixed() {
+        assert_eq!(format_time(90), "1:30");
+        assert_eq!(format_time(61), "1:01");
+    }
+
+    #[test]
+    fn format_time_max() {
+        assert_eq!(format_time(MAX_TIME), "60:00");
+    }
+
+    #[test]
+    fn format_time_pads_seconds() {
+        assert_eq!(format_time(5), "0:05");
+        assert_eq!(format_time(65), "1:05");
+    }
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct Todo {
     pub text: String,
