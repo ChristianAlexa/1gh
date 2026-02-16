@@ -17,7 +17,6 @@ VERSION := $(shell grep '^version' Cargo.toml | head -1 | sed 's/.*"\(.*\)"/\1/'
 sync-version:
 	@echo "Syncing version $(VERSION) from Cargo.toml"
 	sed -i '' 's|<span>v[^<]*</span>|<span>v$(VERSION)</span>|' docs/index.html
-	sed -i '' 's|<string>[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*</string>|<string>$(VERSION)</string>|' packaging/macos/Info.plist
 
 install:
 	cargo install --path .

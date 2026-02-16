@@ -15,12 +15,10 @@ jobs:
         include:
           - runner: macos-latest
             target: aarch64-apple-darwin
-            arch: arm64
-            asset: 1gh-macos-arm64.dmg
+            asset: 1gh-macos-arm64
           - runner: macos-latest
             target: x86_64-apple-darwin
-            arch: x86_64
-            asset: 1gh-macos-x86_64.dmg
+            asset: 1gh-macos-x86_64
 
     runs-on: ${{ matrix.runner }}
 
@@ -32,30 +30,11 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      - name: Inject version into Info.plist
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          sed -i '' "s/0\.0\.0/$VERSION/g" packaging/macos/Info.plist
-
       - name: Build
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Create .app bundle
-        run: |
-          mkdir -p 1gh.app/Contents/MacOS
-          mkdir -p 1gh.app/Contents/Resources
-          cp packaging/macos/Info.plist 1gh.app/Contents/
-          cp target/${{ matrix.target }}/release/1gh 1gh.app/Contents/MacOS/1gh-bin
-          cp packaging/macos/launcher.sh 1gh.app/Contents/MacOS/1gh
-          chmod +x 1gh.app/Contents/MacOS/1gh
-          chmod +x 1gh.app/Contents/MacOS/1gh-bin
-          cp docs/1gh.icns 1gh.app/Contents/Resources/
-
-      - name: Ad-hoc code sign
-        run: codesign --force --deep --sign - 1gh.app
-
-      - name: Create .dmg
-        run: hdiutil create -volname "1gh" -srcfolder 1gh.app -ov -format UDZO ${{ matrix.asset }}
+      - name: Rename binary
+        run: cp target/${{ matrix.target }}/release/1gh ${{ matrix.asset }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

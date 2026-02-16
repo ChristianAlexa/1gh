@@ -10,9 +10,19 @@ A 60-minute focus timer TUI paired with a short todo list (max 4 tasks). Write d
 
 Each launch starts a fresh session. No data is persisted to disk.
 
-### macOS app (Recommended)
+### macOS (Recommended)
 
-Download the `.dmg` from [onegoodhour.com](https://onegoodhour.com) or the [GitHub releases page](https://github.com/christianalexa/1gh/releases), drag to Applications, and launch from Spotlight or Dock.
+```
+curl -fsSL https://onegoodhour.com/install.sh | sh
+```
+
+Then just run `1gh` in your terminal.
+
+### Via Cargo
+
+```
+cargo install one-good-hour
+```
 
 ### Build from source
 
