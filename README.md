@@ -18,12 +18,6 @@ curl -fsSL https://onegoodhour.com/install.sh | sh
 
 Then just run `1gh` in your terminal.
 
-### Via Cargo
-
-```
-cargo install one-good-hour
-```
-
 ### Build from source
 
 Requires the [Rust toolchain](https://rustup.rs).
