@@ -64,7 +64,7 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Install tauri-cli
-        run: cargo install tauri-cli@2
+        run: cargo install tauri-cli --version '^2'
 
       - name: Build Tauri app
         run: cargo tauri build --target ${{ matrix.target }}
