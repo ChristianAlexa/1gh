@@ -42,8 +42,46 @@ jobs:
           name: ${{ matrix.asset }}
           path: ${{ matrix.asset }}
 
+  build-tauri:
+    strategy:
+      matrix:
+        include:
+          - runner: macos-latest
+            target: aarch64-apple-darwin
+            asset: OneGoodHour-macos-arm64.dmg
+          - runner: macos-13
+            target: x86_64-apple-darwin
+            asset: OneGoodHour-macos-x86_64.dmg
+
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnyl/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install tauri-cli
+        run: cargo install tauri-cli@2
+
+      - name: Build Tauri app
+        run: cargo tauri build --target ${{ matrix.target }}
+
+      - name: Rename dmg
+        run: |
+          DMG=$(find src-tauri/target/${{ matrix.target }}/release/bundle/dmg -name '*.dmg' | head -1)
+          cp "$DMG" ${{ matrix.asset }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset }}
+          path: ${{ matrix.asset }}
+
   release:
-    needs: build
+    needs: [build, build-tauri]
     runs-on: ubuntu-latest
 
     steps:

@@ -6,8 +6,8 @@ use ratatui::{
     Frame,
 };
 
-use crate::app::{App, InputMode};
-use crate::types::{format_time, Todo, MAX_TIME};
+use one_good_hour_core::app::{App, InputMode};
+use one_good_hour_core::types::{format_time, Todo, MAX_TIME};
 
 use super::gradient_bar::GradientBar;
 

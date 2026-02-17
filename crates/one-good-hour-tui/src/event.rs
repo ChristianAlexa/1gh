@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyModifiers};
 
-use crate::app::{App, InputMode};
+use one_good_hour_core::app::{App, InputMode};
 
 const TICK_RATE: Duration = Duration::from_millis(250);
 

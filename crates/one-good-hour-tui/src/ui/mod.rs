@@ -8,7 +8,7 @@ use ratatui::{
     Frame,
 };
 
-use crate::app::App;
+use one_good_hour_core::app::App;
 
 pub fn draw(frame: &mut Frame, app: &App) {
     let area = frame.area();

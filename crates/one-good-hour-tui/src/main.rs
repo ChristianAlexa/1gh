@@ -1,6 +1,4 @@
-mod app;
 mod event;
-mod types;
 mod ui;
 
 use std::io;
@@ -12,7 +10,7 @@ use crossterm::{
 };
 use ratatui::{backend::CrosstermBackend, Terminal};
 
-use app::App;
+use one_good_hour_core::app::App;
 
 fn main() -> Result<()> {
     let mut app = App::new();
@@ -40,6 +38,11 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
         terminal.draw(|frame| ui::draw(frame, app))?;
 
         event::handle_events(app)?;
+
+        if app.sound_pending {
+            print!("\x07");
+            app.sound_pending = false;
+        }
 
         if app.should_quit {
             return Ok(());

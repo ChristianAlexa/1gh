@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 pub const MAX_TIME: u64 = 3600;
 
 pub fn format_time(seconds: u64) -> String {
@@ -43,20 +45,20 @@ mod tests {
     }
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Todo {
     pub text: String,
     pub completed: bool,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CompletedNote {
     pub todos: Vec<Todo>,
     pub time_spent: u64,
     pub completion_number: u64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ActiveNote {
     pub todos: [Todo; 4],
     pub time_left: u64,

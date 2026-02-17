@@ -1,0 +1,17 @@
+[package]
+name = "one-good-hour-desktop"
+version.workspace = true
+edition.workspace = true
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+one-good-hour-core = { path = "../crates/one-good-hour-core" }
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[lib]
+name = "one_good_hour_desktop_lib"
+crate-type = ["lib", "cdylib", "staticlib"]

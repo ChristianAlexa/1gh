@@ -6,7 +6,7 @@ use ratatui::{
     Frame,
 };
 
-use crate::app::ModalKind;
+use one_good_hour_core::app::ModalKind;
 
 use super::colors;
 

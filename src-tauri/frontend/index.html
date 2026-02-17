@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One Good Hour</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <header id="title">ONE GOOD HOUR</header>
+
+    <section id="timer-section">
+      <div id="progress-bar">
+        <div id="progress-fill"></div>
+        <span id="progress-label">60:00 · 0%</span>
+      </div>
+      <div id="timer-status">⏸ Paused  [Space] Play/Pause  [r] Reset</div>
+    </section>
+
+    <section id="tasks-section">
+      <div class="bordered-box" id="tasks-box">
+        <span class="box-title"> Tasks </span>
+        <div id="todo-0" class="todo-row">
+          <span class="todo-selector">  </span>
+          <span class="todo-checkbox">[ ]</span>
+
+          <span class="todo-text">(empty)</span>
+        </div>
+        <div id="todo-1" class="todo-row">
+          <span class="todo-selector">  </span>
+          <span class="todo-checkbox">[ ]</span>
+
+          <span class="todo-text">(empty)</span>
+        </div>
+        <div id="todo-2" class="todo-row">
+          <span class="todo-selector">  </span>
+          <span class="todo-checkbox">[ ]</span>
+
+          <span class="todo-text">(empty)</span>
+        </div>
+        <div id="todo-3" class="todo-row">
+          <span class="todo-selector">  </span>
+          <span class="todo-checkbox">[ ]</span>
+
+          <span class="todo-text">(empty)</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="action-bar">
+      <span id="action-bar-text">
+        <span class="key-hint">[x]</span> Check  <span class="key-hint">[c]</span> Complete  <span class="key-hint">[?]</span> Help
+      </span>
+    </section>
+
+    <section id="history-section">
+      <div class="bordered-box" id="history-box">
+        <span class="box-title"> History </span>
+        <div id="history-content">
+          <div id="history-empty">No completed sessions yet. Complete a session with [c].</div>
+          <div id="history-header" class="hidden"></div>
+          <div id="history-todos"></div>
+          <div id="history-footer" class="hidden"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="modal-overlay" class="hidden">
+    <div id="modal-box">
+      <div id="modal-title"></div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="theme-overlay" class="hidden">
+    <div id="theme-box">
+      <div id="theme-title">Themes</div>
+      <div id="theme-list"></div>
+      <div id="theme-footer">[j/k] Navigate  [Enter] Apply  [Esc] Close</div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

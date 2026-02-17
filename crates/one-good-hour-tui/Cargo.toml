@@ -1,0 +1,20 @@
+[package]
+name = "one-good-hour-tui"
+version.workspace = true
+edition.workspace = true
+description = "A 60-minute focus timer TUI with a 4-task todo list"
+repository = "https://github.com/christianalexa/1gh"
+homepage = "https://onegoodhour.com"
+license = "MIT"
+keywords = ["tui", "timer", "productivity", "focus"]
+categories = ["command-line-utilities"]
+
+[[bin]]
+name = "1gh"
+path = "src/main.rs"
+
+[dependencies]
+one-good-hour-core = { path = "../one-good-hour-core" }
+ratatui = "0.29"
+crossterm = "0.28"
+anyhow = "1"

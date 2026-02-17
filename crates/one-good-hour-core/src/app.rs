@@ -1,15 +1,17 @@
+use serde::{Deserialize, Serialize};
+
 use crate::types::*;
 
 const MAX_TODO_LEN: usize = 50;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum InputMode {
     Normal,
     Editing(usize),
     Modal,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ModalKind {
     CompleteSession,
     ClearNotes,
@@ -25,6 +27,7 @@ pub struct App {
     pub modal: Option<ModalKind>,
     pub should_quit: bool,
     pub status_message: Option<String>,
+    pub sound_pending: bool,
 }
 
 impl App {
@@ -38,6 +41,7 @@ impl App {
             modal: None,
             should_quit: false,
             status_message: None,
+            sound_pending: false,
         }
     }
 
@@ -229,8 +233,8 @@ impl App {
 
     // Sound
 
-    fn play_sound(&self) {
-        print!("\x07");
+    fn play_sound(&mut self) {
+        self.sound_pending = true;
     }
 
     // Clipboard
