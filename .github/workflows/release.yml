@@ -71,7 +71,7 @@ jobs:
 
       - name: Rename dmg
         run: |
-          DMG=$(find src-tauri/target/${{ matrix.target }}/release/bundle/dmg -name '*.dmg' | head -1)
+          DMG=$(find target/${{ matrix.target }}/release/bundle/dmg -name '*.dmg' | head -1)
           cp "$DMG" ${{ matrix.asset }}
 
       - name: Upload artifact
