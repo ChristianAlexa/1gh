@@ -30,8 +30,8 @@ pub struct App {
     pub sound_pending: bool,
 }
 
-impl App {
-    pub fn new() -> Self {
+impl Default for App {
+    fn default() -> Self {
         Self {
             active_note: ActiveNote::default(),
             completed_notes: Vec::new(),
@@ -43,6 +43,12 @@ impl App {
             status_message: None,
             sound_pending: false,
         }
+    }
+}
+
+impl App {
+    pub fn new() -> Self {
+        Self::default()
     }
 
     // Timer controls

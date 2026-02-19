@@ -14,4 +14,4 @@ serde_json = "1"
 
 [lib]
 name = "one_good_hour_desktop_lib"
-crate-type = ["lib", "cdylib", "staticlib"]
+crate-type = ["lib", "cdylib"]

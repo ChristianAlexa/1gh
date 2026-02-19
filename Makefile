@@ -43,5 +43,5 @@ uninstall:
 tauri-dev:
 	cargo tauri dev
 
-tauri-build:
+tauri-build: sync-version
 	cargo tauri build

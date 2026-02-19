@@ -55,7 +55,7 @@ fn snapshot(app: &mut App) -> AppSnapshot {
 
     let (input_mode, editing_index) = match &app.input_mode {
         InputMode::Normal => ("normal".to_string(), None),
-        InputMode::Editing(i) => (format!("editing:{}", i), Some(*i)),
+        InputMode::Editing(i) => (format!("editing:{i}"), Some(*i)),
         InputMode::Modal => ("modal".to_string(), None),
     };
 
