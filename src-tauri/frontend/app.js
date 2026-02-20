@@ -184,8 +184,14 @@ function handleNormalKey(e) {
         case "D":
             sendAction("clear_notes");
             break;
+        case "N":
+            sendAction("new_session");
+            break;
         case "?":
             sendAction("show_help");
+            break;
+        case "H":
+            sendAction("toggle_history");
             break;
         case "t":
             openThemeModal();
@@ -322,16 +328,24 @@ function renderActionBar(state) {
         bar.innerHTML =
             '<span class="key-hint">[x]</span> Check  ' +
             '<span class="key-hint">[c]</span> Complete  ' +
+            '<span class="key-hint">[N]</span> New  ' +
             '<span class="key-hint">[t]</span> Themes  ' +
             '<span class="key-hint">[?]</span> Help';
     }
 }
 
 function renderHistory(state) {
+    const section = document.getElementById("history-section");
     const empty = document.getElementById("history-empty");
     const header = document.getElementById("history-header");
     const todosEl = document.getElementById("history-todos");
     const footer = document.getElementById("history-footer");
+
+    if (!state.show_history) {
+        section.classList.add("hidden");
+        return;
+    }
+    section.classList.remove("hidden");
 
     if (!state.completed_notes || state.completed_notes.length === 0) {
         empty.classList.remove("hidden");
@@ -398,6 +412,9 @@ function renderModal(state) {
     } else if (state.modal === "clear_notes") {
         title.textContent = "Clear History";
         body.innerHTML = 'Clear all completed sessions?\n\n<span class="key-hint">[y]</span> Yes  <span class="key-hint">[n]</span> No';
+    } else if (state.modal === "new_session") {
+        title.textContent = "New Session";
+        body.innerHTML = 'Start fresh? This clears all tasks and history.\n\n<span class="key-hint">[y]</span> Yes  <span class="key-hint">[n]</span> No';
     }
 }
 
@@ -409,7 +426,8 @@ function renderHelpContent() {
         ["d", "Clear task", "c", "Complete session"],
         ["h/\u2190", "Prev history", "l/\u2192", "Next history"],
         ["y", "Copy markdown", "D", "Clear history"],
-        ["q", "Quit", "?", "This help"],
+        ["N", "New session", "t", "Themes"],
+        ["H", "Toggle history", "?", "This help"],
     ];
 
     let html = '<div class="help-table">';

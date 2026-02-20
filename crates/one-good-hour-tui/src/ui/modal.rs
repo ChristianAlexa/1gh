@@ -25,6 +25,10 @@ pub(super) fn draw_modal(frame: &mut Frame, area: Rect, modal: &ModalKind) {
             "Clear History",
             "Clear all completed sessions?\n\n[y] Yes  [n] No",
         ),
+        ModalKind::NewSession => (
+            "New Session",
+            "Start fresh? This clears all tasks and history.\n\n[y] Yes  [n] No",
+        ),
         ModalKind::Help => unreachable!(),
     };
 
@@ -63,7 +67,8 @@ fn draw_help_modal(frame: &mut Frame, area: Rect) {
         ("d", "Clear task", "c", "Complete session"),
         ("h/←", "Prev history", "l/→", "Next history"),
         ("y", "Copy markdown", "D", "Clear history"),
-        ("q", "Quit", "?", "This help"),
+        ("N", "New session", "q", "Quit"),
+        ("H", "Toggle history", "?", "This help"),
     ];
 
     let mut lines: Vec<Line> = vec![Line::from("")];

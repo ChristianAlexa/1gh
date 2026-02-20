@@ -152,8 +152,7 @@ pub(super) fn draw_action_bar(frame: &mut Frame, area: Rect, app: &App) {
         .style(Style::default().fg(colors::normal()))
         .block(
             Block::default()
-                .borders(Borders::TOP | Borders::BOTTOM)
-                .border_style(Style::default().fg(colors::faint())),
+                .borders(Borders::NONE),
         );
     frame.render_widget(bar, area);
 }

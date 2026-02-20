@@ -15,6 +15,7 @@ pub enum InputMode {
 pub enum ModalKind {
     CompleteSession,
     ClearNotes,
+    NewSession,
     Help,
 }
 
@@ -28,6 +29,7 @@ pub struct App {
     pub should_quit: bool,
     pub status_message: Option<String>,
     pub sound_pending: bool,
+    pub show_history: bool,
 }
 
 impl Default for App {
@@ -42,6 +44,7 @@ impl Default for App {
             should_quit: false,
             status_message: None,
             sound_pending: false,
+            show_history: true,
         }
     }
 }
@@ -203,6 +206,11 @@ impl App {
 
     // Modals
 
+    pub fn show_new_session_modal(&mut self) {
+        self.modal = Some(ModalKind::NewSession);
+        self.input_mode = InputMode::Modal;
+    }
+
     pub fn show_clear_notes_modal(&mut self) {
         if self.completed_notes.is_empty() {
             return;
@@ -226,6 +234,12 @@ impl App {
                     self.completed_notes.clear();
                     self.history_index = None;
                 }
+                ModalKind::NewSession => {
+                    self.active_note = ActiveNote::default();
+                    self.completed_notes.clear();
+                    self.selected_todo = 0;
+                    self.history_index = None;
+                }
                 ModalKind::Help => {}
             }
         }
@@ -235,6 +249,12 @@ impl App {
     pub fn dismiss_modal(&mut self) {
         self.modal = None;
         self.input_mode = InputMode::Normal;
+    }
+
+    // History visibility
+
+    pub fn toggle_history(&mut self) {
+        self.show_history = !self.show_history;
     }
 
     // Sound
@@ -588,5 +608,23 @@ mod tests {
         assert!(md.contains("Time spent: 20:00"));
         assert!(md.contains("- [x] write tests"));
         assert!(md.contains("- [ ] review PR"));
+    }
+
+    // -- Toggle history --
+
+    #[test]
+    fn show_history_defaults_to_true() {
+        let app = App::new();
+        assert!(app.show_history);
+    }
+
+    #[test]
+    fn toggle_history_flips() {
+        let mut app = App::new();
+        assert!(app.show_history);
+        app.toggle_history();
+        assert!(!app.show_history);
+        app.toggle_history();
+        assert!(app.show_history);
     }
 }

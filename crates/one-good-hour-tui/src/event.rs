@@ -55,6 +55,10 @@ fn handle_normal(app: &mut App, key: KeyEvent) {
         // Clipboard
         KeyCode::Char('y') => app.copy_markdown(),
         KeyCode::Char('D') => app.show_clear_notes_modal(),
+        KeyCode::Char('N') => app.show_new_session_modal(),
+
+        // Toggle history
+        KeyCode::Char('H') => app.toggle_history(),
 
         // Help
         KeyCode::Char('?') => app.show_help(),
