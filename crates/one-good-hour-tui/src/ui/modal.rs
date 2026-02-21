@@ -68,7 +68,7 @@ fn draw_help_modal(frame: &mut Frame, area: Rect) {
         ("h/←", "Prev history", "l/→", "Next history"),
         ("y", "Copy markdown", "D", "Clear history"),
         ("N", "New session", "q", "Quit"),
-        ("H", "Toggle history", "?", "This help"),
+        ("H", "Toggle history", "?", "Show help"),
     ];
 
     let mut lines: Vec<Line> = vec![Line::from("")];

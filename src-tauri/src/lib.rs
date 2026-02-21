@@ -90,7 +90,7 @@ fn snapshot(app: &mut App) -> AppSnapshot {
         app.sound_pending = false;
     }
 
-    let status_message = app.status_message.clone();
+    let status_message = app.status_message.take();
 
     AppSnapshot {
         time_left,

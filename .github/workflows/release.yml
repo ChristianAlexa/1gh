@@ -15,10 +15,10 @@ jobs:
         include:
           - runner: macos-latest
             target: aarch64-apple-darwin
-            asset: 1gh-macos-arm64
+            asset: OneGoodHour-tui-macos-arm64
           - runner: macos-latest
             target: x86_64-apple-darwin
-            asset: 1gh-macos-x86_64
+            asset: OneGoodHour-tui-macos-x86_64
 
     runs-on: ${{ matrix.runner }}
 
@@ -48,10 +48,10 @@ jobs:
         include:
           - runner: macos-latest
             target: aarch64-apple-darwin
-            asset: OneGoodHour-macos-arm64.dmg
+            asset: OneGoodHour-desktop-macos-arm64.dmg
           - runner: macos-14
             target: x86_64-apple-darwin
-            asset: OneGoodHour-macos-x86_64.dmg
+            asset: OneGoodHour-desktop-macos-x86_64.dmg
 
     runs-on: ${{ matrix.runner }}
 

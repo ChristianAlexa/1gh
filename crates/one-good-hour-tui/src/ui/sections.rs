@@ -142,6 +142,8 @@ pub(super) fn draw_action_bar(frame: &mut Frame, area: Rect, app: &App) {
             Span::raw(" Check  "),
             Span::styled("[c]", Style::default().fg(colors::bright())),
             Span::raw(" Complete  "),
+            Span::styled("[N]", Style::default().fg(colors::bright())),
+            Span::raw(" New  "),
             Span::styled("[?]", Style::default().fg(colors::bright())),
             Span::raw(" Help"),
         ])

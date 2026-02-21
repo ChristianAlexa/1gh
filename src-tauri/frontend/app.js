@@ -427,7 +427,7 @@ function renderHelpContent() {
         ["h/\u2190", "Prev history", "l/\u2192", "Next history"],
         ["y", "Copy markdown", "D", "Clear history"],
         ["N", "New session", "t", "Themes"],
-        ["H", "Toggle history", "?", "This help"],
+        ["H", "Toggle history", "?", "Show help"],
     ];
 
     let html = '<div class="help-table">';
