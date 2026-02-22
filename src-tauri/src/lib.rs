@@ -3,10 +3,14 @@ use std::sync::Mutex;
 use one_good_hour_core::app::{App, InputMode, ModalKind};
 use one_good_hour_core::types::{format_time, MAX_TIME};
 use serde::Serialize;
-use tauri::{LogicalSize, State, WebviewWindow};
+use tauri::image::Image;
+use tauri::menu::{MenuBuilder, MenuItemBuilder};
+use tauri::tray::{TrayIcon, TrayIconBuilder};
+use tauri::{AppHandle, LogicalSize, Manager, State, WebviewWindow};
 
 pub struct AppState(pub Mutex<App>);
 pub struct SavedWindowHeight(pub Mutex<Option<f64>>);
+pub struct TrayHolder(pub Mutex<Option<TrayIcon>>);
 
 #[derive(Debug, Clone, Serialize)]
 pub struct TodoSnapshot {
@@ -118,10 +122,16 @@ fn get_state(state: State<'_, AppState>) -> AppSnapshot {
 }
 
 #[tauri::command]
-fn tick(state: State<'_, AppState>) -> AppSnapshot {
+fn tick(state: State<'_, AppState>, app_handle: AppHandle) -> AppSnapshot {
     let mut app = state.0.lock().unwrap();
     app.tick();
-    snapshot(&mut app)
+    let snap = snapshot(&mut app);
+    if let Some(tray) = app_handle.tray_by_id("main-tray") {
+        let prefix = if snap.is_running { "\u{25cf}" } else { "\u{25cb}" };
+        let mins = (snap.time_left + 59) / 60; // round up
+        let _ = tray.set_title(Some(format!("{} {}m", prefix, mins)));
+    }
+    snap
 }
 
 #[tauri::command]
@@ -209,7 +219,56 @@ pub fn run() {
     tauri::Builder::default()
         .manage(AppState(Mutex::new(App::new())))
         .manage(SavedWindowHeight(Mutex::new(None)))
+        .manage(TrayHolder(Mutex::new(None)))
         .invoke_handler(tauri::generate_handler![get_state, tick, action])
+        .setup(|app| {
+            let toggle_timer =
+                MenuItemBuilder::with_id("toggle_timer", "Start / Pause").build(app)?;
+            let show_hide =
+                MenuItemBuilder::with_id("show_hide", "Show / Hide").build(app)?;
+            let quit = MenuItemBuilder::with_id("quit", "Quit").build(app)?;
+            let menu = MenuBuilder::new(app)
+                .item(&toggle_timer)
+                .item(&show_hide)
+                .separator()
+                .item(&quit)
+                .build()?;
+
+            let icon = Image::from_bytes(include_bytes!("../icons/32x32.png"))?;
+            let tray = TrayIconBuilder::with_id("main-tray")
+                .icon(icon)
+                .menu(&menu)
+                .title("\u{25cb} 60m")
+                .tooltip("One Good Hour")
+                .on_menu_event(|app, event| match event.id().as_ref() {
+                    "toggle_timer" => {
+                        let state = app.state::<AppState>();
+                        let mut a = state.0.lock().unwrap();
+                        a.toggle_timer();
+                    }
+                    "show_hide" => {
+                        if let Some(window) = app.get_webview_window("main") {
+                            if window.is_visible().unwrap_or(false) {
+                                let _ = window.hide();
+                            } else {
+                                let _ = window.show();
+                                let _ = window.set_focus();
+                            }
+                        }
+                    }
+                    "quit" => {
+                        app.exit(0);
+                    }
+                    _ => {}
+                })
+                .build(app)?;
+
+            // Must keep tray alive — dropping it removes it from the menu bar
+            let holder = app.state::<TrayHolder>();
+            *holder.0.lock().unwrap() = Some(tray);
+
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

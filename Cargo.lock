@@ -2329,7 +2329,7 @@ checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
 
 [[package]]
 name = "one-good-hour-core"
-version = "0.5.1"
+version = "0.6.0"
 dependencies = [
  "anyhow",
  "arboard",
@@ -2339,7 +2339,7 @@ dependencies = [
 
 [[package]]
 name = "one-good-hour-desktop"
-version = "0.5.1"
+version = "0.6.0"
 dependencies = [
  "one-good-hour-core",
  "serde",
@@ -2350,7 +2350,7 @@ dependencies = [
 
 [[package]]
 name = "one-good-hour-tui"
-version = "0.5.1"
+version = "0.6.0"
 dependencies = [
  "anyhow",
  "crossterm",
@@ -3613,6 +3613,7 @@ dependencies = [
  "gtk",
  "heck 0.5.0",
  "http",
+ "image",
  "jni",
  "libc",
  "log",

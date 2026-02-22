@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/nicedoc/tauri/master/crates/tauri-utils/schema.json",
   "productName": "One Good Hour",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "identifier": "com.onegoodhour.app",
   "build": {
     "frontendDist": "frontend"
