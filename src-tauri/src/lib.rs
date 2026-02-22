@@ -128,7 +128,7 @@ fn tick(state: State<'_, AppState>, app_handle: AppHandle) -> AppSnapshot {
     let snap = snapshot(&mut app);
     if let Some(tray) = app_handle.tray_by_id("main-tray") {
         let prefix = if snap.is_running { "\u{25cf}" } else { "\u{25cb}" };
-        let mins = (snap.time_left + 59) / 60; // round up
+        let mins = snap.time_left.div_ceil(60);
         let _ = tray.set_title(Some(format!("{} {}m", prefix, mins)));
     }
     snap
