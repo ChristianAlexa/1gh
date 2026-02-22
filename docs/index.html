@@ -106,9 +106,16 @@
       text-align: left;
     }
 
+    .download-wrap {
+      position: relative;
+      width: 100%;
+    }
+
     .download-btn {
-      display: inline-flex;
+      display: flex;
+      width: 100%;
       align-items: center;
+      justify-content: center;
       gap: 0.5rem;
       background: var(--accent);
       color: var(--bg);
@@ -132,6 +139,37 @@
     .download-btn svg {
       width: 16px;
       height: 16px;
+    }
+
+    .download-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.25rem 0;
+      z-index: 10;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .download-menu.open { display: block; }
+
+    .download-menu a {
+      display: block;
+      padding: 0.5rem 0.75rem;
+      font-family: var(--mono);
+      font-size: 0.8125rem;
+      color: var(--text);
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .download-menu a:hover {
+      background: rgba(255, 255, 255, 0.06);
+      text-decoration: none;
     }
 
     .copy-btn {
@@ -243,13 +281,18 @@
 
       <div class="install-stack">
 
-        <!-- Desktop -->
+        <!-- Download -->
         <div class="install-section">
-          <span class="section-label">Desktop App</span>
-          <a class="download-btn" href="https://github.com/christianalexa/1gh/releases/latest">
-            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2.75 14A1.75 1.75 0 011 12.25v-2.5a.75.75 0 011.5 0v2.5c0 .138.112.25.25.25h10.5a.25.25 0 00.25-.25v-2.5a.75.75 0 011.5 0v2.5A1.75 1.75 0 0113.25 14zM7.25 7.689V2a.75.75 0 011.5 0v5.689l1.97-1.969a.749.749 0 111.06 1.06l-3.25 3.25a.749.749 0 01-1.06 0L4.22 6.78a.749.749 0 111.06-1.06z"/></svg>
-            Download
-          </a>
+          <div class="download-wrap">
+            <button class="download-btn" onclick="toggleDownload()" aria-expanded="false" aria-haspopup="true">
+              <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2.75 14A1.75 1.75 0 011 12.25v-2.5a.75.75 0 011.5 0v2.5c0 .138.112.25.25.25h10.5a.25.25 0 00.25-.25v-2.5a.75.75 0 011.5 0v2.5A1.75 1.75 0 0113.25 14zM7.25 7.689V2a.75.75 0 011.5 0v5.689l1.97-1.969a.749.749 0 111.06 1.06l-3.25 3.25a.749.749 0 01-1.06 0L4.22 6.78a.749.749 0 111.06-1.06z"/></svg>
+              Download ▾
+            </button>
+            <div class="download-menu" id="download-menu">
+              <a data-asset="OneGoodHour-desktop-macos-arm64.dmg">macOS — Apple Silicon (.dmg)</a>
+              <a data-asset="OneGoodHour-desktop-macos-x86_64.dmg">macOS — Intel (.dmg)</a>
+            </div>
+          </div>
           <div class="install-box">
             <span>xattr -cr "/Applications/One Good Hour.app"</span>
             <button class="copy-btn" onclick="copyCmd(this, 'xattr -cr &quot;/Applications/One Good Hour.app&quot;')" aria-label="Copy to clipboard">
@@ -266,11 +309,36 @@
 
     <footer class="site-footer">
       <a href="https://github.com/christianalexa/1gh" aria-label="GitHub"><svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
-      <span>v0.6.0</span>
+      <span id="app-version">v0.6.0</span>
     </footer>
 
   </div>
   <script>
+    (function() {
+      var version = document.getElementById('app-version').textContent.trim();
+      var base = 'https://github.com/ChristianAlexa/1gh/releases/download/' + version + '/';
+      var links = document.querySelectorAll('#download-menu a[data-asset]');
+      for (var i = 0; i < links.length; i++) {
+        links[i].href = base + links[i].getAttribute('data-asset');
+      }
+    })();
+
+    function toggleDownload() {
+      var menu = document.getElementById('download-menu');
+      var btn = menu.previousElementSibling;
+      var open = menu.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open);
+    }
+
+    document.addEventListener('click', function(e) {
+      var wrap = document.querySelector('.download-wrap');
+      if (wrap && !wrap.contains(e.target)) {
+        var menu = document.getElementById('download-menu');
+        menu.classList.remove('open');
+        menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+      }
+    });
+
     function copyCmd(btn, text) {
       navigator.clipboard.writeText(text);
       btn.classList.add('copied');
