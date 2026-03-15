@@ -125,6 +125,10 @@ impl App {
         self.active_note.todos[index].text.pop();
     }
 
+    pub fn edit_clear(&mut self, index: usize) {
+        self.active_note.todos[index].text.clear();
+    }
+
     pub fn toggle_todo(&mut self) {
         let idx = self.selected_todo;
         // Only toggle if todo has text

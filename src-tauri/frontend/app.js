@@ -120,6 +120,17 @@ async function sendAction(name, payload) {
 // --- Keyboard handler ---
 document.addEventListener("keydown", handleKey);
 
+document.addEventListener("paste", (e) => {
+    if (!currentState) return;
+    if (!currentState.input_mode || !currentState.input_mode.startsWith("editing:")) return;
+    const text = (e.clipboardData || window.clipboardData).getData("text");
+    for (const ch of text) {
+        if (ch === "\n" || ch === "\r") continue;
+        sendAction("edit_char", ch);
+    }
+    e.preventDefault();
+});
+
 function handleKey(e) {
     if (themeModalOpen) {
         handleThemeKey(e);
@@ -204,6 +215,14 @@ function handleNormalKey(e) {
 }
 
 function handleEditingKey(e) {
+    if (e.metaKey || e.ctrlKey) {
+        if (e.key === "Backspace") {
+            sendAction("edit_clear");
+            e.preventDefault();
+        }
+        return;
+    }
+
     const key = e.key;
     let handled = true;
 

@@ -213,7 +213,7 @@ body {
 /* History */
 #history-section {
     flex: 1;
-    min-height: 0;
+    min-height: 120px;
     overflow: visible;
     padding-bottom: 8px;
 }

@@ -180,6 +180,11 @@ fn action(
                 app.edit_backspace(idx);
             }
         }
+        "edit_clear" => {
+            if let InputMode::Editing(idx) = app.input_mode {
+                app.edit_clear(idx);
+            }
+        }
         "clear_sound" => {
             app.sound_pending = false;
         }
@@ -190,6 +195,9 @@ fn action(
 
 /// Compact height: just title + timer + tasks + action bar (no history).
 const COMPACT_HEIGHT: f64 = 280.0;
+/// Minimum window height when history is visible (compact + history pane).
+const HISTORY_MIN_HEIGHT: f64 = 420.0;
+const MIN_WIDTH: f64 = 600.0;
 
 fn resize_for_history(
     webview: &WebviewWindow,
@@ -202,13 +210,16 @@ fn resize_for_history(
         let outer = webview.outer_size()?;
         let current_height = outer.height as f64 / scale;
         *saved_height.0.lock().unwrap() = Some(current_height);
+        webview.set_min_size(Some(LogicalSize::new(MIN_WIDTH, 300.0)))?;
         webview.set_size(LogicalSize::new(outer.width as f64 / scale, COMPACT_HEIGHT))?;
     } else if !was_showing && now_showing {
+        webview.set_min_size(Some(LogicalSize::new(MIN_WIDTH, HISTORY_MIN_HEIGHT)))?;
         let mut saved = saved_height.0.lock().unwrap();
         if let Some(h) = saved.take() {
             let scale = webview.scale_factor()?;
             let outer = webview.outer_size()?;
-            webview.set_size(LogicalSize::new(outer.width as f64 / scale, h))?;
+            let restore_height = h.max(HISTORY_MIN_HEIGHT);
+            webview.set_size(LogicalSize::new(outer.width as f64 / scale, restore_height))?;
         }
     }
     Ok(())

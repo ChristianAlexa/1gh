@@ -19,7 +19,7 @@ VERSION := $(shell grep '^version' Cargo.toml | head -1 | sed 's/.*"\(.*\)"/\1/'
 
 sync-version:
 	@echo "Syncing version $(VERSION) from Cargo.toml"
-	sed -i '' 's|<span>v[^<]*</span>|<span>v$(VERSION)</span>|' docs/index.html
+	sed -i '' 's|<span id="app-version">v[^<]*</span>|<span id="app-version">v$(VERSION)</span>|' docs/index.html
 	sed -i '' 's|"version": "[^"]*"|"version": "$(VERSION)"|' src-tauri/tauri.conf.json
 
 install:
